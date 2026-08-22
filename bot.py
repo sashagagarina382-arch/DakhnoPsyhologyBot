@@ -207,17 +207,22 @@ async def payment_confirmed(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def finalize_request(update: Update, context: ContextTypes.DEFAULT_TYPE, paid: bool):
     user = update.effective_user
+    # без Markdown: запит користувача може містити символи (* _ `), які ламають
+    # парсинг Telegram і тихо блокують надсилання цього повідомлення
     summary = (
-        "🆕 *Нова заявка з бота*\n\n"
+        "🆕 Нова заявка з бота\n\n"
         f"Ім'я: {context.user_data.get('full_name', '—')}\n"
         f"Статус: {context.user_data.get('first_time', '—')}\n"
         f"Формат: {context.user_data.get('format', 'потребує уточнення')}\n"
         f"Запит: {context.user_data.get('request_text', '—')}\n"
         f"Контакт: {context.user_data.get('contact', '—')}\n"
-        f"Оплата: {'позначено як оплачено ✅ (звір надходження на карту)' if paid else 'без оплати — потребує уточнення формату'}\n"
+        f"Оплата: {'позначено як оплачено (звір надходження на карту)' if paid else 'без оплати — потребує уточнення формату'}\n"
         f"Telegram: @{user.username or 'без username'} (id: {user.id})"
     )
-    await context.bot.send_message(chat_id=OWNER_CHAT_ID, text=summary, parse_mode="Markdown")
+    try:
+        await context.bot.send_message(chat_id=OWNER_CHAT_ID, text=summary)
+    except Exception:
+        logger.exception("Не вдалося надіслати заявку власнику (перевір OWNER_CHAT_ID)")
 
     reply_text = (
         "дякую! як тільки надходження на карту підтвердиться, я напишу "
