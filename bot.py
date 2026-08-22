@@ -81,9 +81,25 @@ POLICY_TEXT = (
 NAME, FIRST_TIME, SCOPE_CHECK, FORMAT_CHOICE, POLICY_ACK, DESCRIBING, CONTACT, PAYMENT = range(8)
 
 
+# async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+#     await update.message.reply_text(
+#         "вітаю у боті «Ваш психолог Саша✨» 🤍\n\nвкажи, будь ласка, своє ім'я та прізвище"
+#     )
+#     return NAME
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+
+    logger.info(
+        f"👤 USER INFO | "
+        f"id={user.id} | "
+        f"username=@{user.username or 'no_username'} | "
+        f"name={user.full_name}"
+    )
+
     await update.message.reply_text(
-        "вітаю у боті «Ваш психолог Саша✨» 🤍\n\nвкажи, будь ласка, своє ім'я та прізвище"
+        "вітаю у боті «Ваш психолог Саша✨» 🤍\n\n"
+        "вкажи, будь ласка, своє ім'я та прізвище"
     )
     return NAME
 
